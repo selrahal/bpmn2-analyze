@@ -22,6 +22,8 @@ public class MoveDependencyLessNodesTreeVisitor implements TreeVisitor {
 					// Probably a start node, ignore it
 				} else if (node.anchor == null) {
 					// Probably a start node, ignoreit
+				} else if (node.parent.type == Node.Type.GATEWAY) {
+					//dont move past a gateway!
 				} else if (!node.parent.id.equals(node.anchor.id)) {
 					hints.addHint(new Move(node, node.anchor));
 				}

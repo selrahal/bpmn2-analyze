@@ -3,6 +3,8 @@ package org.jbpm.analyze.main;
 import java.io.File;
 import java.io.IOException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.jbpm.analyze.move.Move;
@@ -10,13 +12,18 @@ import org.jbpm.analyze.tree.Hints;
 import org.jbpm.analyze.tree.Node;
 import org.junit.Assert;
 import org.junit.Test;
+import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 public final class ComplexTest {
+	private static final DocumentBuilderFactory FACTORY = DocumentBuilderFactory.newInstance();
+	
 	@Test
-	public void testMain() throws ParserConfigurationException, SAXException, IOException {
+	public void assertHints() throws ParserConfigurationException, SAXException, IOException {
 		String testFile = "src/test/resources/complex.bpmn2";
-		Hints hints = JbpmAnalyze.analyze(new File(testFile));
+		DocumentBuilder db = FACTORY.newDocumentBuilder();
+		Document bpmnDocument = db.parse(testFile);
+		Hints hints = JbpmAnalyze.analyze(bpmnDocument);
 
 		Node sendEmail = new Node();
 		sendEmail.id = "send_email";
@@ -39,7 +46,11 @@ public final class ComplexTest {
 
 		Assert.assertEquals(expectedHints, hints);
 
-		JbpmAnalyze.execute(new File(testFile), expectedHints);
-
+	}
+	
+	@Test
+	public void testMain() throws ParserConfigurationException, SAXException, IOException {
+		String testFile = "src/test/resources/complex.bpmn2";
+		JbpmAnalyze.run(testFile, "out.bpmn2");
 	}
 }

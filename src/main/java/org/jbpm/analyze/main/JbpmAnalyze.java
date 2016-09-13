@@ -26,12 +26,8 @@ public final class JbpmAnalyze {
 	private static final DocumentBuilderFactory FACTORY = DocumentBuilderFactory.newInstance();
 
 	public static void main(final String[] args) throws ParserConfigurationException, SAXException, IOException {
-		if (args.length == 1) {
-			Hints hints = analyze(new File(args[0]));
-			// Print hints
-			for (Move hint : hints.getHints()) {
-				System.out.println(hint);
-			}
+		if (args.length == 2) {
+			run(args[0], args[1]);
 			System.exit(0);
 		} else {
 			System.err.println("Usage:");
@@ -39,12 +35,26 @@ public final class JbpmAnalyze {
 			System.exit(1);
 		}
 	}
-
-	public static Hints analyze(final File bpmnFile) throws ParserConfigurationException, SAXException, IOException {
-		//Build the Document
+	
+	public static void run(String inputFile, String outFile) throws IOException, ParserConfigurationException, SAXException{
+		File bpmnFile = new File(inputFile);
 		DocumentBuilder db = FACTORY.newDocumentBuilder();
 		Document bpmnDocument = db.parse(bpmnFile);
 		
+		
+		Hints hints = analyze(bpmnDocument);
+		while (!hints.getHints().isEmpty()) {
+			Move move = hints.getHints().get(0);
+			System.out.println("Executing " + move);
+			move.command(bpmnDocument).execute();
+			BPMN2DocumentUtil.writeFile(bpmnDocument, new File(outFile));
+			hints = analyze(bpmnDocument);
+		}
+		
+		BPMN2DocumentUtil.writeFile(bpmnDocument, new File(outFile));
+	}
+
+	public static Hints analyze(final Document bpmnDocument) throws ParserConfigurationException, SAXException, IOException {
 		Hints hints = new Hints();
 		
 		Tree tree = new Tree(bpmnDocument);
@@ -58,17 +68,6 @@ public final class JbpmAnalyze {
 		tree.visit(new MoveNodeToDifferentParentTreeVisitor(hints));
 		
 		return hints;
-	}
-	
-	public static void execute(final File bpmnFile, final Hints hints) throws ParserConfigurationException, SAXException, IOException {
-		DocumentBuilder db = FACTORY.newDocumentBuilder();
-		Document bpmnDocument = db.parse(bpmnFile);
-		
-		for (Move move : hints.getHints()) {
-			move.command(bpmnDocument).execute();
-		}
-		
-		BPMN2DocumentUtil.writeFile(bpmnDocument, new File("out2.bpmn2"));
 	}
 
 }

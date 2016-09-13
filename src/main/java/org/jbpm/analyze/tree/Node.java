@@ -18,7 +18,7 @@ public class Node {
 	
 	public enum Type {
 		//TODO: Add more
-		WORK_ITEM, START_EVENT, END_EVENT;
+		WORK_ITEM, START_EVENT, END_EVENT, GATEWAY;
 	}
 
 }
