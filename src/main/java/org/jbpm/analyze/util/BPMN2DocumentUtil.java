@@ -34,12 +34,13 @@ public class BPMN2DocumentUtil {
 	 * @return List of children element ids
 	 */
 	public static List<String> findNextElements(Document bpmnDocument, String rootId) {
-		Match root = $(bpmnDocument).find(attr("id", rootId)).first();
+		Match root = $(bpmnDocument).find(attr("id", rootId));
 		List<Match> childOutgoingFlows = root.children("outgoing").each();
 		List<String> idsOfChildren = new LinkedList<String>();
 		for (Match match : childOutgoingFlows) {
+			LOG.debug(match);
 			String nodeId = $(bpmnDocument).find(attr("id",match.text())).attr("targetRef");
-			LOG.trace("Found child of " + root.attr("id") + " " + nodeId);
+			LOG.debug("Found child of " + root.attr("id") + " " + nodeId + " via " + match.text());
 			idsOfChildren.add(nodeId);
 		}
 		
@@ -48,6 +49,10 @@ public class BPMN2DocumentUtil {
 	
 	public static String getStartNode(Document bpmnDocument) {
 		return $(bpmnDocument).find("startEvent").first().id();
+	}
+	
+	public static String getGatewayDirection(Document bpmnDocument, String gatewayId) {
+		return $(bpmnDocument).find(attr("id", gatewayId)).first().attr("gatewayDirection");
 	}
 	
 	public static List<String> getProcessVariables(Document bpmnDocument, String elementId) {

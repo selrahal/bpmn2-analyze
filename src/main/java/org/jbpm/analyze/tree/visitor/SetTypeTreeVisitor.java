@@ -17,21 +17,23 @@ public class SetTypeTreeVisitor implements TreeVisitor {
 	public TreeVisitor visit(Node node) {
 		//Check if the node is a gateway, if so ...... ?
 		String tag = BPMN2DocumentUtil.getTag(bpmnDocument, node.id);
-		switch (tag) {
-		case "startEvent":
+		if (tag.equals("startEvent")) {
 			node.type = Node.Type.START_EVENT;
-			break;
-		case "endEvent":
+		} else if (tag.equals("endEvent")) {
 			node.type = Node.Type.END_EVENT;
-			break;
-		case "parallelGateway":
-		case "exclusiveGateway":
-			node.type = Node.Type.GATEWAY;
-			break;
-		default:
+		} else if (tag.equals("parallelGateway") || tag.equals("exclusiveGateway")) {
+			String direction = BPMN2DocumentUtil.getGatewayDirection(bpmnDocument, node.id);
+			if ("Diverging".equals(direction)) {
+				node.type = Node.Type.DIVERGING_GATEWAY;
+			} else if ("Converging".equals(direction)) {
+				node.type = Node.Type.CONVERGING_GATEWAY;
+			} else {
+				LOGGER.error("Node " + node.id + " has tag " + tag + " with direction " +direction);
+			}
+		} else {
 			node.type = Node.Type.WORK_ITEM;
-			break;
 		}
+
 		LOGGER.debug("Node " + node.id + " is type " + node.type.name());
 		return this;
 	}

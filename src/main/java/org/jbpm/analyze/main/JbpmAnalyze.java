@@ -58,8 +58,8 @@ public final class JbpmAnalyze {
 		Hints hints = new Hints();
 		
 		Tree tree = new Tree(bpmnDocument);
-		tree.visit(new AnchorTreeVisitor());
 		tree.visit(new SetTypeTreeVisitor(bpmnDocument));
+		tree.visit(new AnchorTreeVisitor());
 		tree.visit(new SetPriorityTreeVisitor());
 		tree.visit(new ProcessVariableTreeVisitor(bpmnDocument));
 		tree.visit(new SetParentTreeVisitor());

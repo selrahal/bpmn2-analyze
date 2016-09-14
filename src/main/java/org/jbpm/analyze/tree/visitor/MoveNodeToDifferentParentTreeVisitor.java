@@ -21,10 +21,11 @@ public class MoveNodeToDifferentParentTreeVisitor implements TreeVisitor {
 			Node parent = node.parent;
 			if (pvDep != null 
 					&& parent != null
-//					&& parent.type != Node.Type.GATEWAY
+					&& parent.type != Node.Type.CONVERGING_GATEWAY
+					&& parent.type != Node.Type.DIVERGING_GATEWAY
 					&& pvDep != parent 
 					&& pvDep.priority < parent.priority) {
-				
+				LOGGER.debug("Node " + node.id + " parent=" + parent.id + " pvDep=" + pvDep.id);
 				hints.addHint(new Move(node, pvDep));
 			}
 		}

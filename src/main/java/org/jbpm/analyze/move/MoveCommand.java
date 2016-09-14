@@ -4,6 +4,7 @@ import static org.joox.JOOX.$;
 import static org.joox.JOOX.attr;
 
 import org.apache.log4j.Logger;
+import org.jbpm.analyze.tree.Node;
 import org.jbpm.analyze.util.BPMN2DocumentUtil;
 import org.joox.Match;
 import org.w3c.dom.Document;
@@ -32,7 +33,7 @@ public class MoveCommand {
 		
 		//create parallelconverge
 		String parallelGatewayId = move.newAnchor.id + "-join";
-		this.addParallelGatewayBelow(bpmnDocument, parallelGatewayId, move.focus.id);
+		this.addParallelConvergingGateway(bpmnDocument, parallelGatewayId, move.focus.id);
 		
 		//--redirect sequence flow from "focus target" to new gateway
 		String focusTargetId = $(bpmnDocument).find(attr("sourceRef",move.focus.id)).attr("targetRef");
@@ -43,12 +44,12 @@ public class MoveCommand {
 		this.redirectSequenceFlow(bpmnDocument, move.focus.id, parallelGatewayId);
 		
 		
-		if (!"parallelGateway".equals(anchorTag)) {
+		if (move.newAnchor.type != Node.Type.DIVERGING_GATEWAY) {
 			LOGGER.info("-new anchor " + move.newAnchor.id + " is not a parallel gateway, need to add");
 
 			//--add a parallel gateway
 			String parallelGatewaySplitId = move.newAnchor.id + "-split";
-			this.addParallelGatewayAbove(bpmnDocument, parallelGatewaySplitId, move.newAnchor.id);
+			this.addParallelDivergingGateway(bpmnDocument, parallelGatewaySplitId, move.newAnchor.id);
 			Match parallelGateway = $(bpmnDocument).find(attr("id", parallelGatewaySplitId));
 			
 			//--redirect sequence flow from anchors target to new gateway
@@ -60,8 +61,6 @@ public class MoveCommand {
 			
 			//--add a sequence flow on gateway to anchors target
 			String parallelGatewayToAnchorsOriginalTargetId = this.addSequenceFlow(bpmnDocument, parallelGatewaySplitId, anchorsOriginalTargetId);
-			parallelGateway.append($("bpmn2:outgoing").text(parallelGatewayToAnchorsOriginalTargetId));
-			$(bpmnDocument).find(attr("id", anchorsOriginalTargetId)).child("incoming").text(parallelGatewayToAnchorsOriginalTargetId);            
             
 			//--anchor=gateway
             anchorId = parallelGatewaySplitId;
@@ -84,7 +83,8 @@ public class MoveCommand {
 		newTarget.append($("bpmn2:incoming").text(sequenceFlow.id()));
 	}
 	
-	private void addParallelGatewayAbove(Document bpmnDocument, String gatewayId, String targetNodeId) {
+	private void addParallelDivergingGateway(Document bpmnDocument, String gatewayId, String targetNodeId) {
+		LOGGER.info("Adding Diverging Gateway for " + targetNodeId);
 		Match process = $(bpmnDocument).find("process").first();
 		Match bpmnPlane = $(bpmnDocument).find("BPMNPlane").first();
 		
@@ -93,9 +93,7 @@ public class MoveCommand {
                 .attr("gatewayDirection", "Diverging");
 		
 		Match target = $(bpmnDocument).find(attr("bpmnElement", targetNodeId)).child("Bounds");
-		LOGGER.info("-NODE" + targetNodeId + " found " + target);
 		String newY = new Double(Double.parseDouble(target.attr("y")) -100).toString();
-		LOGGER.info(target.attr("y") + "->" + newY);
 		String newX = new Double(Double.parseDouble(target.attr("x")) + 30).toString();;
 		
 		Match parallelGatewayShape = $("bpmndi:BPMNShape").attr("id", gatewayId + "-shape")
@@ -106,20 +104,19 @@ public class MoveCommand {
         bpmnPlane.append(parallelGatewayShape);
 	}
 	
-	private void addParallelGatewayBelow(Document bpmnDocument, String gatewayId, String targetNodeId) {
+	private void addParallelConvergingGateway(Document bpmnDocument, String gatewayId, String targetNodeId) {
+		LOGGER.info("Adding Converging Gateway for " + targetNodeId);
 		Match process = $(bpmnDocument).find("process").first();
 		Match bpmnPlane = $(bpmnDocument).find("BPMNPlane").first();
 		
 		Match parallelGateway =$("bpmn2:parallelGateway").attr("id", gatewayId)
                 .attr("name", "parallel split")
-                .attr("gatewayDirection", "Diverging");
+                .attr("gatewayDirection", "Converging");
 		
 		Match target = $(bpmnDocument).find(attr("bpmnElement", targetNodeId)).child("Bounds");
-		LOGGER.info("+NODE" + targetNodeId + " found " + target);
 		
 		String newY = new Double(Double.parseDouble(target.attr("y")) + 100).toString();
 		String newX = target.attr("x");
-		LOGGER.info(target.attr("y") + "->" + newY);
 		Match parallelGatewayShape = $("bpmndi:BPMNShape").attr("id", gatewayId + "-shape")
 				.attr("bpmnElement", gatewayId)
 				.append($("dc:Bounds").attr("height","50.0").attr("width","50.0").attr("x",newX).attr("y",newY));
@@ -129,10 +126,19 @@ public class MoveCommand {
 	}
 	
 	private String addSequenceFlow(Document bpmnDocument, String sourceId, String targetId) {
+		LOGGER.info("Adding sequence flow from " + sourceId + " to " + targetId);
 		Match process = $(bpmnDocument).find("process").first();
 		Match bpmnPlane = $(bpmnDocument).find("BPMNPlane").first();
 		
 		String sequenceFlowId = sourceId + "-" + targetId;
+		
+		$(bpmnDocument).find(attr("id", sourceId)).append(
+				$("bpmn2:outgoing").text(sequenceFlowId)
+				);
+		
+		$(bpmnDocument).find(attr("id", targetId)).append(
+				$("bpmn2:incoming").text(sequenceFlowId)
+				);
 		
 		Match parallelGatewayToFocus = $("bpmn2:sequenceFlow").attr("id", sequenceFlowId)
 				.attr("sourceRef", sourceId)
