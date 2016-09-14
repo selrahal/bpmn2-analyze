@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
  * No matter how we re-arrange the diagram each node should always come
  * in the branch of its original anchor node (ex of anchor is start nodes and gateways)
  * 
+ * Its the earliest node in the diagram that, when hit, ensures we hit the focus
+ * 
  * @author selrahal
  *
  */

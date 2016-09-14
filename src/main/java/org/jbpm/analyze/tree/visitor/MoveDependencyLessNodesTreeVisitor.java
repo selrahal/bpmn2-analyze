@@ -23,13 +23,15 @@ public class MoveDependencyLessNodesTreeVisitor implements TreeVisitor {
 				if (node.parent == null) {
 					LOGGER.debug("Node " + node.id +" has no parent, no moving");
 				} else if (node.anchor == null) {
-					// Probably a start node, ignoreit
+					LOGGER.debug("Node " + node.id + " has no anchor, no moving");
 				} else if (node.parent.type == Node.Type.DIVERGING_GATEWAY) {
 					LOGGER.debug("Node " + node.id +" has a gateway parent "+node.parent.id+", no moving");
 				} else if (!node.parent.id.equals(node.anchor.id)) {
 					LOGGER.debug("Node " + node.id + " parent=" + node.parent.id + " anchor=" + node.anchor.id);
 					hints.addHint(new Move(node, node.anchor));
 				}
+			} else {
+				LOGGER.debug("Node " + node.id + " has dependencies, not touching");
 			}
 		}
 		
