@@ -45,25 +45,33 @@ public class MoveCommand {
 		
 		
 		if (move.newAnchor.type != Node.Type.DIVERGING_GATEWAY) {
-			LOGGER.info("-new anchor " + move.newAnchor.id + " is not a parallel gateway, need to add");
+			LOGGER.info("New anchor " + move.newAnchor.id + " is not a parallel gateway, need to use "
+					+ "a parallel gateway after it");
+			
+			Node potentialGateway = move.newAnchor.children.get(0);
+			if (potentialGateway.type != Node.Type.DIVERGING_GATEWAY) {
 
-			//--add a parallel gateway
-			String parallelGatewaySplitId = move.newAnchor.id + "-split";
-			this.addParallelDivergingGateway(bpmnDocument, parallelGatewaySplitId, move.newAnchor.id);
-			Match parallelGateway = $(bpmnDocument).find(attr("id", parallelGatewaySplitId));
-			
-			//--redirect sequence flow from anchors target to new gateway
-			//TODO: Replace the following lines with a call to this.redirectSequenceFlow...
-			Match sequenceFlowFromAnchor = $(bpmnDocument).find(attr("sourceRef",move.newAnchor.id));
-			String anchorsOriginalTargetId = sequenceFlowFromAnchor.attr("targetRef");
-			sequenceFlowFromAnchor.attr("targetRef", parallelGatewaySplitId);
-			parallelGateway.append($("bpmn2:incoming").text(sequenceFlowFromAnchor.id()));
-			
-			//--add a sequence flow on gateway to anchors target
-			String parallelGatewayToAnchorsOriginalTargetId = this.addSequenceFlow(bpmnDocument, parallelGatewaySplitId, anchorsOriginalTargetId);
-            
-			//--anchor=gateway
-            anchorId = parallelGatewaySplitId;
+				//--add a parallel gateway
+				String parallelGatewaySplitId = move.newAnchor.id + "-split";
+				this.addParallelDivergingGateway(bpmnDocument, parallelGatewaySplitId, move.newAnchor.id);
+				Match parallelGateway = $(bpmnDocument).find(attr("id", parallelGatewaySplitId));
+				
+				//--redirect sequence flow from anchors target to new gateway
+				//TODO: Replace the following lines with a call to this.redirectSequenceFlow...
+				Match sequenceFlowFromAnchor = $(bpmnDocument).find(attr("sourceRef",move.newAnchor.id));
+				String anchorsOriginalTargetId = sequenceFlowFromAnchor.attr("targetRef");
+				sequenceFlowFromAnchor.attr("targetRef", parallelGatewaySplitId);
+				parallelGateway.append($("bpmn2:incoming").text(sequenceFlowFromAnchor.id()));
+				
+				//--add a sequence flow on gateway to anchors target
+				String parallelGatewayToAnchorsOriginalTargetId = this.addSequenceFlow(bpmnDocument, parallelGatewaySplitId, anchorsOriginalTargetId);
+	            
+				//--anchor=gateway
+	            anchorId = parallelGatewaySplitId;
+			} else {
+				LOGGER.info("Next node " + potentialGateway.id + " is a parallel gateway!");
+				anchorId = potentialGateway.id;
+			}
 		}
 
 		//Anchor is definitely a parallel gateway
