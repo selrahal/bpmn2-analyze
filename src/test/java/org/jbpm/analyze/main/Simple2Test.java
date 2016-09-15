@@ -34,7 +34,7 @@ public final class Simple2Test {
 
 		Hints expectedHints = new Hints();
 		expectedHints.addHint(first);
-
+		
 		Assert.assertEquals(expectedHints, hints);
 
 	}

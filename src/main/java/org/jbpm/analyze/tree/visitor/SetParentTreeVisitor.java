@@ -17,12 +17,7 @@ public class SetParentTreeVisitor implements TreeVisitor {
 	}
 	
 	public TreeVisitor visit(Node node) {
-		//Check if the node is a gateway, if so set to null to treat this node as the beginning of a new branch
-		if (node.type != Node.Type.DIVERGING_GATEWAY) {
-			node.parent = parent;
-		} else {
-			node.parent = null;
-		}
+		node.parent = parent;
 		
 		if (node.parent != null) {
 			LOGGER.debug("Node " + node.id + " has parent " + node.parent.id);

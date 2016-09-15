@@ -19,7 +19,7 @@ public final class SimpleTest {
 	
 	@Test
 	public void assertHints() throws ParserConfigurationException, SAXException, IOException {
-		String testFile = "src/test/resources/complex.bpmn2";
+		String testFile = "src/test/resources/simple.bpmn2";
 		DocumentBuilder db = FACTORY.newDocumentBuilder();
 		Document bpmnDocument = db.parse(testFile);
 		Hints hints = JbpmAnalyze.analyze(bpmnDocument);

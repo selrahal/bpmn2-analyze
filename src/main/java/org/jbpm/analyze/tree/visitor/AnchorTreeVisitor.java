@@ -1,5 +1,8 @@
 package org.jbpm.analyze.tree.visitor;
 
+import java.util.List;
+import java.util.Stack;
+
 import org.jbpm.analyze.tree.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,33 +11,55 @@ import org.slf4j.LoggerFactory;
  * No matter how we re-arrange the diagram each node should always come
  * in the branch of its original anchor node (ex of anchor is start nodes and gateways)
  * 
- * Its the earliest node in the diagram that, when hit, ensures we hit the focus
+ * Its the earliest node in the diagram that, when hit, ensures we hit the focus. We can
+ * branch immediatley after the anchor and go to our node.
  * 
  * @author selrahal
  *
  */
 public class AnchorTreeVisitor implements TreeVisitor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AnchorTreeVisitor.class);
-	Node anchor;
+	private Stack<Node> anchors = new Stack<>();
 	
 	public AnchorTreeVisitor() {
 	}
 	
-	public AnchorTreeVisitor(Node node) {
-		this.anchor = node;
+	public AnchorTreeVisitor(Stack<Node> anchors) {
+		this.anchors = anchors;
 	}
 	
 	public TreeVisitor visit(Node node) {
-		if (anchor == null) {
-			anchor = node;
+		Stack<Node> inputAnchors = (Stack<Node>) anchors.clone();
+		if (inputAnchors.isEmpty()) {
+			LOGGER.debug("Empty anchor context at " + node.id + ", populating context with this node");
+			inputAnchors.add(node);
 		} else {
-			LOGGER.debug("Setting anchor of " + node.id + " to " + anchor.id);
-			node.anchor = anchor;
+			LOGGER.debug("Setting anchor of " + node.id + " to the first in the list "+inputAnchors.peek().id+", whole list is: " + ids(inputAnchors) + " ref=" + inputAnchors.hashCode());
+			node.anchor = inputAnchors.peek();
 		}
 		
-		if (node.type == Node.Type.DIVERGING_GATEWAY || node.type == Node.Type.CONVERGING_GATEWAY) {
-			return new AnchorTreeVisitor(node);
+		if (node.type == Node.Type.DIVERGING_EXCLUSIVE_GATEWAY || node.type == Node.Type.DIVERGING_PARALLEL_GATEWAY) {
+			//Update the anchor for the children of this node. the safest new anchor is this 
+			//gateway. but really should this include the previous anchor plus the branch taken?
+			LOGGER.debug("Pushing " + node.id + " on to anchor context");
+			inputAnchors.push(node);
+			return new AnchorTreeVisitor(inputAnchors);
+		} else if (node.type == Node.Type.CONVERGING_EXCLUSIVE_GATEWAY || node.type == Node.Type.CONVERGING_PARALLEL_GATEWAY) {
+			LOGGER.debug("Popping " + node.id + " from to anchor context");
+			inputAnchors.pop();
+			return new AnchorTreeVisitor(inputAnchors);
 		}
-		return new AnchorTreeVisitor(this.anchor);
+		return new AnchorTreeVisitor(inputAnchors);
 	}
+	
+	private String ids(Stack<Node> list) {
+		Stack<Node> toExhaust = (Stack<Node>) list.clone();
+		StringBuilder sb = new StringBuilder("[");
+		while (!toExhaust.isEmpty()) {
+			sb.append(toExhaust.pop().id + ",");
+		}
+		sb.append("]");
+		return sb.toString();
+	}
+	
 }

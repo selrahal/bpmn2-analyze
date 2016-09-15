@@ -44,12 +44,12 @@ public class MoveCommand {
 		this.redirectSequenceFlow(bpmnDocument, move.focus.id, parallelGatewayId);
 		
 		
-		if (move.newAnchor.type != Node.Type.DIVERGING_GATEWAY) {
+		if (move.newAnchor.type != Node.Type.DIVERGING_PARALLEL_GATEWAY) {
 			LOGGER.info("New anchor " + move.newAnchor.id + " is not a parallel gateway, need to use "
 					+ "a parallel gateway after it");
 			
 			Node potentialGateway = move.newAnchor.children.get(0);
-			if (potentialGateway.type != Node.Type.DIVERGING_GATEWAY) {
+			if (potentialGateway.type != Node.Type.DIVERGING_PARALLEL_GATEWAY) {
 
 				//--add a parallel gateway
 				String parallelGatewaySplitId = move.newAnchor.id + "-split";

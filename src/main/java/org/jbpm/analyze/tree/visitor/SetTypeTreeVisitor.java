@@ -21,12 +21,21 @@ public class SetTypeTreeVisitor implements TreeVisitor {
 			node.type = Node.Type.START_EVENT;
 		} else if (tag.equals("endEvent")) {
 			node.type = Node.Type.END_EVENT;
-		} else if (tag.equals("parallelGateway") || tag.equals("exclusiveGateway")) {
+		} else if (tag.equals("parallelGateway")) {
 			String direction = BPMN2DocumentUtil.getGatewayDirection(bpmnDocument, node.id);
 			if ("Diverging".equals(direction)) {
-				node.type = Node.Type.DIVERGING_GATEWAY;
+				node.type = Node.Type.DIVERGING_PARALLEL_GATEWAY;
 			} else if ("Converging".equals(direction)) {
-				node.type = Node.Type.CONVERGING_GATEWAY;
+				node.type = Node.Type.CONVERGING_PARALLEL_GATEWAY;
+			} else {
+				LOGGER.error("Node " + node.id + " has tag " + tag + " with direction " +direction);
+			}
+		} else if (tag.equals("exclusiveGateway")) {
+			String direction = BPMN2DocumentUtil.getGatewayDirection(bpmnDocument, node.id);
+			if ("Diverging".equals(direction)) {
+				node.type = Node.Type.DIVERGING_EXCLUSIVE_GATEWAY;
+			} else if ("Converging".equals(direction)) {
+				node.type = Node.Type.CONVERGING_EXCLUSIVE_GATEWAY;
 			} else {
 				LOGGER.error("Node " + node.id + " has tag " + tag + " with direction " +direction);
 			}

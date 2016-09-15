@@ -17,7 +17,20 @@ public class LogTreeVisitor implements TreeVisitor {
 	}
 	
 	public TreeVisitor visit(Node node) {
-		LOGGER.info(prefix + node.id + " priority=" + node.priority);
+		LOGGER.info(prefix + node.id 
+				+ " priority=" + node.priority 
+				+ " parent=" + id(node.parent) 
+				+ " anchor=" + id(node.anchor)
+				+ " pvDep=" + id(node.dependencyAccordingToPV)
+				+ " type=" + node.type.name()
+				+ " hc=" + node.hashCode());
 		return new LogTreeVisitor(prefix + "-");
+	}
+	
+	private String id(Node node) {
+		if (node == null) 
+			return "null";
+		return node.id;
+		
 	}
 }

@@ -11,6 +11,7 @@ import org.jbpm.analyze.move.Move;
 import org.jbpm.analyze.tree.Hints;
 import org.jbpm.analyze.tree.Tree;
 import org.jbpm.analyze.tree.visitor.AnchorTreeVisitor;
+import org.jbpm.analyze.tree.visitor.LogTreeVisitor;
 import org.jbpm.analyze.tree.visitor.MoveDependencyLessNodesTreeVisitor;
 import org.jbpm.analyze.tree.visitor.MoveNodeToDifferentParentTreeVisitor;
 import org.jbpm.analyze.tree.visitor.PVDependencyTreeVisitor;
@@ -58,12 +59,18 @@ public final class JbpmAnalyze {
 		Hints hints = new Hints();
 		
 		Tree tree = new Tree(bpmnDocument);
+		//Populate metadata
 		tree.visit(new SetTypeTreeVisitor(bpmnDocument));
 		tree.visit(new AnchorTreeVisitor());
 		tree.visit(new SetPriorityTreeVisitor());
 		tree.visit(new ProcessVariableTreeVisitor(bpmnDocument));
 		tree.visit(new SetParentTreeVisitor());
 		tree.visit(new PVDependencyTreeVisitor(bpmnDocument));
+		
+		//Log metadata
+		tree.visit(new LogTreeVisitor());
+		
+		//Determine moves
 		tree.visit(new MoveDependencyLessNodesTreeVisitor(hints));
 		tree.visit(new MoveNodeToDifferentParentTreeVisitor(hints));
 		

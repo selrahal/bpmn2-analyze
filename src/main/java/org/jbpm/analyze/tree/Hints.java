@@ -9,7 +9,9 @@ public class Hints {
 	private List<Move> hints = new LinkedList<Move>();
 
 	public void addHint(Move hint) {
-		hints.add(hint);
+		if (!hints.contains(hint)) {
+			hints.add(hint);
+		}
 	}
 	
 	public List<Move> getHints() {

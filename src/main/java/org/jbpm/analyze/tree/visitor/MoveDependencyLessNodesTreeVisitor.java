@@ -24,10 +24,12 @@ public class MoveDependencyLessNodesTreeVisitor implements TreeVisitor {
 					LOGGER.debug("Node " + node.id +" has no parent, no moving");
 				} else if (node.anchor == null) {
 					LOGGER.debug("Node " + node.id + " has no anchor, no moving");
-				} else if (node.parent.type == Node.Type.DIVERGING_GATEWAY) {
+				} else if (node.parent.type == Node.Type.DIVERGING_EXCLUSIVE_GATEWAY) {
 					LOGGER.debug("Node " + node.id +" has a gateway parent "+node.parent.id+", no moving");
+//				} else if (node.parent.type == Node.Type.DIVERGING_PARALLEL_GATEWAY) { //TODO this is a stopgap to prevent loops in tests :(
+//					LOGGER.debug("Node " + node.id +" has a parallel gateway parent "+node.parent.id+", no moving FIX THIS");
 				} else if (!node.parent.id.equals(node.anchor.id)) {
-					LOGGER.debug("Node " + node.id + " parent=" + node.parent.id + " anchor=" + node.anchor.id);
+					LOGGER.debug("MOVE: Node " + node.id + " parent=" + node.parent.id + " anchor=" + node.anchor.id);
 					hints.addHint(new Move(node, node.anchor));
 				}
 			} else {
