@@ -6,7 +6,7 @@ import java.util.List;
 import org.jbpm.analyze.move.Move;
 
 public class Hints {
-	private List<Move> hints = new LinkedList<Move>();
+	private List<Move> hints = new LinkedList<>();
 
 	public void addHint(Move hint) {
 		if (!hints.contains(hint)) {

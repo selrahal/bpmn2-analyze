@@ -32,7 +32,7 @@ public final class JbpmAnalyze {
 			System.exit(0);
 		} else {
 			System.err.println("Usage:");
-			System.err.println("  java " + SimpleTest.class.getName() + " bpmnFile");
+			System.err.println("  java " + JbpmAnalyze.class.getName() + " bpmnFile");
 			System.exit(1);
 		}
 	}

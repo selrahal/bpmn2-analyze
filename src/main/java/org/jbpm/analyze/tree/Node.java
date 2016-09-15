@@ -9,7 +9,7 @@ public class Node {
 	public Integer priority;
 	public Node parent;
 	public Node dependencyAccordingToPV;
-	public List<Node> children = new LinkedList<Node>();
+	public List<Node> children = new LinkedList<>();
 	public Node anchor;
 	
 	//TODO: separate in/out PVs

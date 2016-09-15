@@ -30,25 +30,29 @@ public class AnchorTreeVisitor implements TreeVisitor {
 	
 	public TreeVisitor visit(Node node) {
 		Stack<Node> inputAnchors = (Stack<Node>) anchors.clone();
+		LOGGER.debug("Start node " + node.id + "with " + ids(inputAnchors) + inputAnchors.hashCode() + " from " + anchors.hashCode());
 		if (inputAnchors.isEmpty()) {
 			LOGGER.debug("Empty anchor context at " + node.id + ", populating context with this node");
 			inputAnchors.add(node);
-		} else {
+		} else if (node.type == Node.Type.CONVERGING_EXCLUSIVE_GATEWAY || node.type == Node.Type.CONVERGING_PARALLEL_GATEWAY) {
+			if (inputAnchors.peek().id.contains("-join")) {
+				LOGGER.debug("Popping " + inputAnchors.peek().id + " from to anchor context");
+				inputAnchors.pop();
+			} else {
+				LOGGER.debug("Not Popping " + inputAnchors.peek().id + " from to anchor context, even though we are at a conv gateway");
+			}
+		}
+		
 			LOGGER.debug("Setting anchor of " + node.id + " to the first in the list "+inputAnchors.peek().id+", whole list is: " + ids(inputAnchors) + " ref=" + inputAnchors.hashCode());
 			node.anchor = inputAnchors.peek();
-		}
 		
 		if (node.type == Node.Type.DIVERGING_EXCLUSIVE_GATEWAY || node.type == Node.Type.DIVERGING_PARALLEL_GATEWAY) {
 			//Update the anchor for the children of this node. the safest new anchor is this 
 			//gateway. but really should this include the previous anchor plus the branch taken?
 			LOGGER.debug("Pushing " + node.id + " on to anchor context");
 			inputAnchors.push(node);
-			return new AnchorTreeVisitor(inputAnchors);
-		} else if (node.type == Node.Type.CONVERGING_EXCLUSIVE_GATEWAY || node.type == Node.Type.CONVERGING_PARALLEL_GATEWAY) {
-			LOGGER.debug("Popping " + node.id + " from to anchor context");
-			inputAnchors.pop();
-			return new AnchorTreeVisitor(inputAnchors);
 		}
+		
 		return new AnchorTreeVisitor(inputAnchors);
 	}
 	

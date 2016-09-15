@@ -12,16 +12,15 @@ import org.w3c.dom.Document;
 public class PVDependencyTreeVisitor implements TreeVisitor {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PVDependencyTreeVisitor.class);
 	final Document document;
-	final Map<String, Node> currentDependenciesForPV;
+	final Map<String, Node> currentDependenciesForPV = new HashMap<>();
 	
 	public PVDependencyTreeVisitor(Document bpmnDocument) {
 		document = bpmnDocument;
-		currentDependenciesForPV = new HashMap<>();
 	}
 	
 	public PVDependencyTreeVisitor(Document bpmnDocument,Map<String, Node> currentContext) {
 		this.document = bpmnDocument;
-		currentDependenciesForPV = currentContext;
+		currentDependenciesForPV .putAll(currentContext);
 	}
 	
 	public TreeVisitor visit(Node node) {
@@ -34,7 +33,7 @@ public class PVDependencyTreeVisitor implements TreeVisitor {
 			} else {
 				// we have a candidate for a parent dependency 
 				Node newProvider = currentDependenciesForPV.get(pv);
-				if (!newProvider.id.equals(node.id)) { //this node might be in the context from a different branch parsing
+				if (!newProvider.id.equals(node.id)) {
 					if (pvProvider == null) {
 						//this is the first parent dependency
 						LOGGER.debug("-first dependency reached, node " + newProvider.id + " uses " + pv);
