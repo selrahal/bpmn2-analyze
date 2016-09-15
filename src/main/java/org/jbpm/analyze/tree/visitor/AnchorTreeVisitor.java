@@ -35,7 +35,7 @@ public class AnchorTreeVisitor implements TreeVisitor {
 			LOGGER.debug("Empty anchor context at " + node.id + ", populating context with this node");
 			inputAnchors.add(node);
 		} else if (node.type == Node.Type.CONVERGING_EXCLUSIVE_GATEWAY || node.type == Node.Type.CONVERGING_PARALLEL_GATEWAY) {
-			if (inputAnchors.peek().id.contains("-join")) {
+			if (inputAnchors.peek().type == Node.Type.DIVERGING_EXCLUSIVE_GATEWAY || inputAnchors.peek().type == Node.Type.DIVERGING_PARALLEL_GATEWAY ) {
 				LOGGER.debug("Popping " + inputAnchors.peek().id + " from to anchor context");
 				inputAnchors.pop();
 			} else {

@@ -15,6 +15,7 @@ public class SetTypeTreeVisitor implements TreeVisitor {
 	}
 	
 	public TreeVisitor visit(Node node) {
+		if (node.type != null) return this;
 		//Check if the node is a gateway, if so ...... ?
 		String tag = BPMN2DocumentUtil.getTag(bpmnDocument, node.id);
 		if (tag.equals("startEvent")) {
