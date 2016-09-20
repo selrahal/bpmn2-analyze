@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Node {
-//	public Map<String, String> metaData = new HashMap<>();
+//	TODO: migrate properties to public Map<String, String> metaData = new HashMap<>();
 	public String id;
 	public Integer priority;
 	public Node parent;
