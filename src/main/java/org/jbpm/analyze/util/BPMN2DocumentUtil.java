@@ -48,6 +48,10 @@ public class BPMN2DocumentUtil {
 
 		return idsOfChildren;
 	}
+	
+	public static String getName(Document bpmnDocument, String id) {
+		return $(bpmnDocument).find(attr("id", id)).attr("name");
+	}
 
 	public static String getStartNode(Document bpmnDocument) {
 		return $(bpmnDocument).find("startEvent").first().id();

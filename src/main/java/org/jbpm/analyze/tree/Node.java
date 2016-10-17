@@ -11,6 +11,7 @@ public class Node {
 	public Node dependencyAccordingToPV;
 	public List<Node> children = new LinkedList<>();
 	public Node anchor;
+	public String name;
 	
 	//TODO: separate in/out PVs
 	public List<String> processVariables = new LinkedList<String>();

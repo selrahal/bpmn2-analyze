@@ -20,6 +20,7 @@ public class Tree {
 		this.document = sourceBpmnDocument;
 		this.root = new Node();
 		this.root.id = BPMN2DocumentUtil.getStartNode(sourceBpmnDocument);
+		this.root.name = BPMN2DocumentUtil.getName(sourceBpmnDocument, this.root.id);
 		nodes.put(root.id, root);
 		init(root);
 	}
@@ -30,6 +31,7 @@ public class Tree {
 			if (childNode == null) {
 				childNode = new Node();
 				childNode.id = child;
+				childNode.name = BPMN2DocumentUtil.getName(document, childNode.id);
 				nodes.put(childNode.id,childNode);
 				this.init(childNode);
 			}

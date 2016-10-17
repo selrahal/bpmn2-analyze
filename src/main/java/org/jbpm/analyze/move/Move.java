@@ -13,7 +13,7 @@ public class Move {
 	}
 	
 	public String toString() {
-		return "Move " + focus.id + " to anchor " + newAnchor.id;
+		return "Move " + focus.name + " to anchor " + newAnchor.name;
 	}
 	
 	public MoveCommand command(Document bpmnDocument) {

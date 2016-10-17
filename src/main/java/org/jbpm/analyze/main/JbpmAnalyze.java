@@ -2,6 +2,7 @@ package org.jbpm.analyze.main;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -53,6 +54,23 @@ public final class JbpmAnalyze {
 		}
 		
 		BPMN2DocumentUtil.writeFile(bpmnDocument, new File(outFile));
+	}
+	
+	public static Hints analyze(String inputDoc) throws ParserConfigurationException, SAXException, IOException {
+		File bpmnFile = new File(inputDoc);
+		return analyze(bpmnFile);
+	}
+	
+	public static Hints analyze(File i) throws ParserConfigurationException, SAXException, IOException {
+		DocumentBuilder db = FACTORY.newDocumentBuilder();
+		Document bpmnDocument = db.parse(i);
+		return analyze(bpmnDocument);
+	}
+	
+	public static Hints analyze(InputStream inputDoc) throws ParserConfigurationException, SAXException, IOException {
+		DocumentBuilder db = FACTORY.newDocumentBuilder();
+		Document bpmnDocument = db.parse(inputDoc);
+		return analyze(bpmnDocument);
 	}
 
 	public static Hints analyze(final Document bpmnDocument) throws ParserConfigurationException, SAXException, IOException {
