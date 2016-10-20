@@ -23,13 +23,7 @@ public class MoveCommand extends AbstractMoveCommand {
 	
 	public void execute() {
 		LOGGER.info("Executing command for " + move);
-		
-		Match process = $(bpmnDocument).find("process").first();
-		Match bpmnPlane = $(bpmnDocument).find("BPMNPlane").first();
-		
-		String anchorTag = BPMN2DocumentUtil.getTag(bpmnDocument, move.newAnchor.id);
 		String anchorId = move.newAnchor.id;
-		LOGGER.info("-new anchor tag: " + anchorTag);
 		
 		//create parallelconverge
 		String parallelGatewayId = move.newAnchor.id + "-join";
