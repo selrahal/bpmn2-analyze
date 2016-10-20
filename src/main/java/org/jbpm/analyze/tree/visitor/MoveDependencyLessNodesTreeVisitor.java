@@ -1,6 +1,6 @@
 package org.jbpm.analyze.tree.visitor;
 
-import org.jbpm.analyze.move.Move;
+import org.jbpm.analyze.move.MoveFactory;
 import org.jbpm.analyze.tree.Hints;
 import org.jbpm.analyze.tree.Node;
 import org.slf4j.Logger;
@@ -30,7 +30,7 @@ public class MoveDependencyLessNodesTreeVisitor implements TreeVisitor {
 //					LOGGER.debug("Node " + node.id +" has a parallel gateway parent "+node.parent.id+", no moving FIX THIS");
 				} else if (!node.parent.id.equals(node.anchor.id)) {
 					LOGGER.debug("MOVE: Node " + node.id + " parent=" + node.parent.id + " anchor=" + node.anchor.id);
-					hints.addHint(new Move(node, node.anchor));
+					hints.addHint(MoveFactory.createMove(node, node.anchor));
 				}
 			} else {
 				LOGGER.debug("Node " + node.id + " has dependencies, not touching");

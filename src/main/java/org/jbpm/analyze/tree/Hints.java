@@ -3,18 +3,18 @@ package org.jbpm.analyze.tree;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.jbpm.analyze.move.Move;
+import org.jbpm.analyze.move.AbstractMove;
 
 public class Hints {
-	private List<Move> hints = new LinkedList<>();
+	private List<AbstractMove> hints = new LinkedList<>();
 
-	public void addHint(Move hint) {
+	public void addHint(AbstractMove hint) {
 		if (!hints.contains(hint)) {
 			hints.add(hint);
 		}
 	}
 	
-	public List<Move> getHints() {
+	public List<AbstractMove> getHints() {
 		return hints;
 	}
 	

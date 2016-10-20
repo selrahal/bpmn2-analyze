@@ -1,23 +1,20 @@
 package org.jbpm.analyze.validator;
 
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
 import javax.ejb.Stateless;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.guvnor.common.services.project.builder.service.BuildValidationHelper;
 import org.guvnor.common.services.shared.validation.model.ValidationMessage;
 import org.guvnor.common.services.shared.validation.model.ValidationMessage.Level;
 import org.jbpm.analyze.main.JbpmAnalyze;
-import org.jbpm.analyze.move.Move;
+import org.jbpm.analyze.move.AbstractMove;
 import org.jbpm.analyze.tree.Hints;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
-import org.xml.sax.SAXException;
 
 @Stateless
 public class AnalyzeProcessValidatorHelper implements BuildValidationHelper{
@@ -38,11 +35,12 @@ public class AnalyzeProcessValidatorHelper implements BuildValidationHelper{
 		List<ValidationMessage> messages = new LinkedList<>();
 		try { 
 			Hints hints = JbpmAnalyze.analyze(Paths.convert(path).toFile());
-			for (Move hint : hints.getHints()) {
+			for (AbstractMove hint : hints.getHints()) {
 				LOG.info("Adding " + hint);
 				ValidationMessage toAdd = new ValidationMessage();
 				toAdd.setLevel(Level.INFO);
-				toAdd.setText(hint.toString());
+				toAdd.setPath(path);
+				toAdd.setText("ANALYZE: " + hint.toString());
 				messages.add(toAdd);
 			}
 		} catch (Throwable e) {

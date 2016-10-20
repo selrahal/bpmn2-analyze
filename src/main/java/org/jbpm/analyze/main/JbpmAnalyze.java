@@ -8,7 +8,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.jbpm.analyze.move.Move;
+import org.jbpm.analyze.move.AbstractMove;
 import org.jbpm.analyze.tree.Hints;
 import org.jbpm.analyze.tree.Tree;
 import org.jbpm.analyze.tree.visitor.AnchorTreeVisitor;
@@ -46,7 +46,7 @@ public final class JbpmAnalyze {
 		
 		Hints hints = analyze(bpmnDocument);
 		while (!hints.getHints().isEmpty()) {
-			Move move = hints.getHints().get(0);
+			AbstractMove move = hints.getHints().get(0);
 			System.out.println("Executing " + move);
 			move.command(bpmnDocument).execute();
 			BPMN2DocumentUtil.writeFile(bpmnDocument, new File(outFile));

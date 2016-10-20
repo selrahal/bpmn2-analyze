@@ -3,6 +3,7 @@ package org.jbpm.analyze.tree.visitor;
 import java.util.Stack;
 
 import org.jbpm.analyze.move.Move;
+import org.jbpm.analyze.move.MoveFactory;
 import org.jbpm.analyze.tree.Hints;
 import org.jbpm.analyze.tree.Node;
 import org.jbpm.analyze.tree.Node.Type;
@@ -66,7 +67,7 @@ public class MoveNodeToDifferentParentTreeVisitor implements TreeVisitor {
 						LOGGER.debug("Node " + node.id + ",a=" + node.anchor.id + " has different anchor than currentPvDep " + currentPvDep.id + ",a=" + currentPvDep.anchor.id);
 					} else {
 						LOGGER.debug("MOVE: Node " + node.id + " parent=" + parent.id + " currentPvDep=" + currentPvDep.id);
-						hints.addHint(new Move(node, pvDep));
+						hints.addHint(MoveFactory.createMove(node, pvDep));
 						return this;
 					}
 

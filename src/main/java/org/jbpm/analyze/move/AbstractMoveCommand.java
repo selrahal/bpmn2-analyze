@@ -11,6 +11,8 @@ import org.w3c.dom.Document;
 public abstract class AbstractMoveCommand {
 	private static final Logger LOGGER = Logger.getLogger(AbstractMoveCommand.class);
 	
+	public abstract void execute();
+	
 	protected void redirectSequenceFlow(Document bpmnDocument, String oldTargetId, String newTargetId) {
 		Match oldTarget = $(bpmnDocument).find(attr("id", oldTargetId));
 		Match newTarget = $(bpmnDocument).find(attr("id", newTargetId));
