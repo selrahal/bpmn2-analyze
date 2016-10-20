@@ -17,7 +17,8 @@ public class LogTreeVisitor implements TreeVisitor {
 	}
 	
 	public TreeVisitor visit(Node node) {
-		LOGGER.info(prefix + node.id 
+		LOGGER.info(prefix + node.name
+				+ " id=" + node.id
 				+ " priority=" + node.priority 
 				+ " parent=" + id(node.parent) 
 				+ " anchor=" + id(node.anchor)
