@@ -30,7 +30,6 @@ public class AnalyzeProcessValidatorHelper implements BuildValidationHelper{
     public boolean accepts( final Path path ) {
     	boolean accepts = path.getFileName().endsWith(".bpmn2") || 
     			          path.getFileName().endsWith(".bpmn");
-    	LOG.info(" path={}, accepted={}", path.getFileName(), accepts);
     	return accepts;
     }
 
@@ -46,9 +45,8 @@ public class AnalyzeProcessValidatorHelper implements BuildValidationHelper{
 				toAdd.setText(hint.toString());
 				messages.add(toAdd);
 			}
-		} catch (ParserConfigurationException | SAXException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (Throwable e) {
+			LOG.error("Error processing " + path.getFileName(), e);
 		}
 		
 		return messages;
